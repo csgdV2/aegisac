@@ -23,7 +23,7 @@ When a recording ends, Combat Tracker saves an interactive HTML report and JSON 
 
 This sends the report to its website if synthetic input is detected, this does not need the player to record, but this not necessarily mean that that player is cheating as some mods like Librarian Trade finder, Snappy Tappy, Better place bind, Advance block placement or any mod like that can also trigger them (which are allowed on some servers).
 
-[You can access the list by clicking here.](https://cheattracker.netlify.app/)
+[You can access the site by clicking here.](https://cheattracker.netlify.app/)
 
 Combat Tracker does not change movement, aim, reach, or combat mechanics.
 
