@@ -9,10 +9,9 @@ export default async (req) => {
 
   const q = (new URL(req.url).searchParams.get("q") || "").trim().toLowerCase();
   const list = Array.isArray(index) ? index.filter(Boolean) : [];
-  const reports = (q
+  const reports = q
     ? list.filter((e) => (e.player || "").toLowerCase().includes(q))
-    : list
-  ).slice(0, 200);
+    : list;
 
   return new Response(JSON.stringify({ admin: isAdmin(req), reports }), {
     headers: {

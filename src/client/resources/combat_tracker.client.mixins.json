@@ -13,8 +13,7 @@
 		"KeyboardHandlerMixin",
 		"KeyMappingMixin",
 		"ToggleKeyMappingMixin",
-		"ToggleKeyMappingMixin$Restore",
-		"GuiMixin"
+		"ToggleKeyMappingMixin$Restore"
 	],
 	"injectors": {
 		"defaultRequire": 1

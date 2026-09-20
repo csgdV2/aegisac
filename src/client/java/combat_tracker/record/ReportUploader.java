@@ -17,7 +17,7 @@ public final class ReportUploader {
     private static final Logger LOGGER = LoggerFactory.getLogger("combat_tracker/upload");
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
-    private static final String ENDPOINT = "https://cheattracker.netlify.app/api/report";
+    private static final String ENDPOINT = "https://aegisac.netlify.app/api/report";
 
     private static final HttpClient CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))

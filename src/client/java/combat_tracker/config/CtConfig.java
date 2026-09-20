@@ -17,15 +17,6 @@ public class CtConfig {
     private static CtConfig instance;
 
     public TimingWindow window = new TimingWindow();
-    public boolean hudEnabled = true;
-    public boolean chatEnabled = false;
-    public int hudX = 4;
-    public int hudY = 4;
-
-    public double hudScale = 1.0;
-    public int hudBgOpacityPct = 56;
-    public int hudLayout = 2;
-    public int hudThemeIndex = 1;
 
     public static CtConfig get() {
         if (instance == null) {
@@ -51,7 +42,6 @@ public class CtConfig {
                     if (cfg.window == null) {
                         cfg.window = new TimingWindow();
                     }
-                    cfg.migrate();
                     return cfg;
                 }
             }
@@ -61,15 +51,6 @@ public class CtConfig {
         CtConfig def = new CtConfig();
         def.saveInternal();
         return def;
-    }
-
-    private void migrate() {
-        if (hudLayout < 0 || hudLayout > 2) {
-            hudLayout = 2;
-        }
-        if (hudThemeIndex < 0 || hudThemeIndex > 5) {
-            hudThemeIndex = 1;
-        }
     }
 
     public static void save() {

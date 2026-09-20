@@ -11,8 +11,7 @@
 		"ClientCommonPacketListenerImplMixin",
 		"KeyboardHandlerMixin",
 		"KeyMappingMixin",
-		"ToggleKeyMappingMixin",
-		"GuiMixin"
+		"ToggleKeyMappingMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

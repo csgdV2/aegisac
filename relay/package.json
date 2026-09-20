@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Dashboard that receives and displays Combat Tracker synthetic-input reports.",
+  "description": "Dashboard that receives and displays AegisAC synthetic-input reports.",
   "dependencies": {
     "@netlify/blobs": "^11.0.0"
   }

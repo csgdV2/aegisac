@@ -4,11 +4,8 @@ import combat_tracker.CombatTrackerClient;
 import combat_tracker.config.CtConfig;
 import combat_tracker.config.TimingWindow;
 import combat_tracker.record.SessionRecorder;
-import combat_tracker.stats.StatsTracker;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
 
 public class JumpResetTracker {
     private static final int JUMP_LOOKBACK_TICKS = 2;
@@ -127,42 +124,8 @@ public class JumpResetTracker {
 
         TimingWindow window = CtConfig.get().window;
         TimingWindow.Result result = window.classify(delta);
-        boolean success = result == TimingWindow.Result.SUCCESS;
 
-        StatsTracker stats = StatsTracker.get();
-        stats.record(delta, success);
         SessionRecorder.get().recordJump(delta, result.name());
-
-        String hudText;
-        int color;
-        String chatText;
-        switch (result) {
-            case SUCCESS -> {
-                hudText = "HIT +" + delta + "ms";
-                color = 0xFF55FF55;
-                chatText = "Jump reset HIT! (+" + delta + "ms)";
-            }
-            case TOO_LATE -> {
-                hudText = "MISS too late (+" + delta + "ms)";
-                color = 0xFFFF5555;
-                chatText = "Jump reset MISS - too late (+" + delta + "ms)";
-            }
-            default -> {
-                hudText = "MISS too early (" + delta + "ms)";
-                color = 0xFFFF5555;
-                chatText = "Jump reset MISS - too early (" + delta + "ms)";
-            }
-        }
-        stats.setLastResult(hudText, color);
-        stats.save();
-
-        if (CtConfig.get().chatEnabled) {
-            LocalPlayer p = Minecraft.getInstance().player;
-            if (p != null) {
-                ChatFormatting fmt = success ? ChatFormatting.GREEN : ChatFormatting.RED;
-                p.displayClientMessage(Component.literal("[Combat Tracker] " + chatText).withStyle(fmt), false);
-            }
-        }
     }
 
     private void reset() {

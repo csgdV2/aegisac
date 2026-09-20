@@ -1,16 +1,17 @@
-# Combat Tracker — Reports dashboard
+# AegisAC — Reports dashboard
 
-A tiny Netlify site that receives Combat Tracker session reports and shows the ones
-where a **synthetic input** was detected. The mod uploads a report only when a session
-ends and something was flagged; nothing is shown to the player in-game.
+A tiny Netlify site that receives AegisAC session reports. The mod uploads a report
+when a session ends — every session, so the dashboard has full combat stats — and each
+card flags whether **synthetic input** was detected. Nothing is shown to the player
+in-game.
 
 **Browsing is public; deleting is not.** Anyone with the URL can open `/`, read the
 cards and open any report — there is no login, no sign-out button and nothing that
 says who you are. Deleting lives at **`/admin`**, which nothing links to: you type the
 URL, and it asks for the admin password.
 
-- **Dashboard** (`/`) — recent flagged players, each with an avatar, server, an
-  **account-type** badge (premium / cracked, detected client-side by the mod), the
+- **Dashboard** (`/`) — recent sessions, each with an avatar, server, an
+  **account-type** badge (premium / cracked, detected client-side by the mod), any
   detected input types with per-session counts, and **where each flag came from** —
   the mod that did it, or that it came from outside the game. A **search box in the
   top-right** filters by player name.
@@ -133,7 +134,8 @@ you want, put Netlify's own access control in front of the site.
 ## Point the mod at it
 
 The dashboard URL is baked into the mod's source (not `config.json`), so it never
-appears in the player's config file. Edit the `ENDPOINT` constant in
+appears in the player's config file. It ships pointing at `https://aegisac.netlify.app`.
+To send reports to your own deployment, edit the `ENDPOINT` constant in
 `src/client/java/combat_tracker/record/ReportUploader.java`:
 
 ```java
@@ -171,7 +173,7 @@ reports from &lt;player&gt;** option in the confirmation dialog.
 ## Notes
 
 - Netlify's synchronous request limit is ~6 MB, so `report.mjs` rejects an HTML body
-  over 5 MB (`413`). Flagged sessions are normally short and well under this.
+  over 5 MB (`413`). Session reports are normally short and well under this.
 - Player-supplied text (name, server, mod names, call sites) is only ever inserted with
   `textContent`, and `id`/`uuid` are constrained to `[A-Za-z0-9._-]` before they touch a
   blob key or an avatar URL.

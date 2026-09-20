@@ -2,8 +2,8 @@
 	"schemaVersion": 1,
 	"id": "combat_tracker",
 	"version": "${version}",
-	"name": "Combat Tracker",
-	"description": "A mod that tracks your combat statistics.",
+	"name": "AegisAC",
+	"description": "Client side anticheat. Watches combat for synthetic input and reports flagged sessions.",
 	"authors": [
 		"csgd"
 	],
@@ -12,9 +12,6 @@
 	"entrypoints": {
 		"client": [
 			"combat_tracker.CombatTrackerClient"
-		],
-		"modmenu": [
-			"combat_tracker.integration.ModMenuIntegration"
 		]
 	},
 	"mixins": [
@@ -27,10 +24,6 @@
 		"fabricloader": ">=0.17.0",
 		"minecraft": "${minecraft_version}",
 		"java": ">=${java_release}",
-		"fabric-api": "*",
-		"cloth-config": "*"
-	},
-	"suggests": {
-		"modmenu": "*"
+		"fabric-api": "*"
 	}
 }

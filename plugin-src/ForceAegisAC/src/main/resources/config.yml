@@ -1,0 +1,13 @@
+# ForceAegisAC configuration.
+
+# How long (seconds) to wait after a player joins for their client to send the
+# AegisAC handshake before kicking them. The mod sends it within a tick or two of
+# joining; a couple of seconds covers a slow connection without a noticeable delay.
+grace-period-seconds: 5
+
+# Message shown to players who are kicked for not running AegisAC.
+# Supports '&' colour codes and \n for new lines.
+kick-message: "&c&lAegisAC required\n\n&7This server requires the &fAegisAC&7 client mod."
+
+# Log a line to the console whenever a player passes or fails the check.
+log-checks: true

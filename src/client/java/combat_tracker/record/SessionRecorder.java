@@ -5,21 +5,15 @@ import combat_tracker.detection.IntegrityMonitor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -33,7 +27,6 @@ import java.util.UUID;
 public class SessionRecorder {
     private static final Logger LOGGER = LoggerFactory.getLogger("combat_tracker/record");
     private static final Gson CANONICAL = new GsonBuilder().disableHtmlEscaping().create();
-    private static final Gson PRETTY = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final DateTimeFormatter HUMAN =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss 'UTC'").withZone(ZoneId.of("UTC"));
 
@@ -46,7 +39,6 @@ public class SessionRecorder {
     }
 
     private boolean recording = false;
-    private boolean playerInitiated = false;
     private long startEpochMs = 0;
     private final List<SessionData.JEvent> jumps = new ArrayList<>();
     private final List<SessionData.CEvent> combos = new ArrayList<>();
@@ -55,7 +47,6 @@ public class SessionRecorder {
     private final List<String> opponents = new ArrayList<>();
     private int shieldBreaks;
     private int shieldMisses;
-    private Path lastReportPath;
     private static final long SHIELD_SWAP_TIMEOUT_MS = 2_000L;
     private boolean heldSword;
     private long shieldSwapStartMs = -1;
@@ -85,24 +76,8 @@ public class SessionRecorder {
         return recording;
     }
 
-    public boolean isPlayerRecording() {
-        return recording && playerInitiated;
-    }
-
     public long startEpochMs() {
         return startEpochMs;
-    }
-
-    public static Path dir() {
-        return FabricLoader.getInstance().getConfigDir().resolve("combat_tracker").resolve("recordings");
-    }
-
-    public void toggle() {
-        if (isPlayerRecording()) {
-            stop();
-        } else {
-            start();
-        }
     }
 
     public void startAuto() {
@@ -110,53 +85,23 @@ public class SessionRecorder {
             return;
         }
         recording = true;
-        playerInitiated = false;
         resetSessionState();
-    }
-
-    public void start() {
-        if (recording) {
-            finalizeSession(false, false);
-        }
-        recording = true;
-        playerInitiated = true;
-        resetSessionState();
-        chat("Recording started", ChatFormatting.GREEN);
-    }
-
-    public Path stop() {
-        if (!isPlayerRecording()) {
-            return null;
-        }
-        Path html = finalizeSession(true, false);
-        recording = false;
-        playerInitiated = false;
-        if (html != null) {
-            lastReportPath = html;
-            recordingSavedChat(html);
-        } else {
-            chat("Failed to save recording", ChatFormatting.RED);
-        }
-        startAuto();
-        return html;
     }
 
     public void onDisconnect() {
         if (!recording) {
             return;
         }
-        finalizeSession(isPlayerRecording(), false);
+        finalizeSession(false);
         recording = false;
-        playerInitiated = false;
     }
 
     public void onClientStopping() {
         if (!recording) {
             return;
         }
-        finalizeSession(isPlayerRecording(), true);
+        finalizeSession(true);
         recording = false;
-        playerInitiated = false;
     }
 
     public void recordJump(long deltaMs, String result) {
@@ -321,9 +266,9 @@ public class SessionRecorder {
         captureServer();
     }
 
-    private Path finalizeSession(boolean keepFiles, boolean blockingSend) {
+    private void finalizeSession(boolean blockingSend) {
         if (!recording) {
-            return null;
+            return;
         }
         long endEpochMs = System.currentTimeMillis();
         SessionData data;
@@ -336,40 +281,13 @@ public class SessionRecorder {
             html = ReportBuilder.build(data);
         } catch (Exception e) {
             LOGGER.error("Failed to build session report", e);
-            return null;
-        }
-
-        Path htmlPath = null;
-        if (keepFiles) {
-            try {
-                htmlPath = writeFiles(data, canonical, html);
-            } catch (Exception e) {
-                LOGGER.error("Failed to write recording", e);
-            }
+            return;
         }
 
         boolean flagged = (data.flagHotbar + data.flagUse + data.flagAttack + data.flagKeybind) > 0;
         if (flagged) {
             ReportUploader.report(data, server, html, canonical, blockingSend);
         }
-        return htmlPath;
-    }
-
-    private Path writeFiles(SessionData data, String canonical, String html)
-            throws Exception {
-        Files.createDirectories(dir());
-
-        String stamp = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").withZone(ZoneId.of("UTC"))
-                .format(Instant.ofEpochMilli(startEpochMs));
-
-        SessionFile fileObj = new SessionFile(canonical);
-        Path jsonPath = dir().resolve("session-" + stamp + ".json");
-        Files.writeString(jsonPath, PRETTY.toJson(fileObj));
-
-        Path htmlPath = dir().resolve("session-" + stamp + ".html");
-        Files.writeString(htmlPath, html);
-
-        return htmlPath;
     }
 
     private static String detectAccountType() {
@@ -421,7 +339,7 @@ public class SessionRecorder {
         LocalPlayer p = Minecraft.getInstance().player;
 
         SessionData d = new SessionData();
-        d.mod = "Combat Tracker";
+        d.mod = "AegisAC";
         d.mcVersion = "1.21.11";
         d.mods = collectMods();
         d.player = firstNonNull(playerName, p != null ? p.getName().getString() : null, "unknown");
@@ -483,45 +401,4 @@ public class SessionRecorder {
         return out;
     }
 
-    private void chat(String msg, ChatFormatting color) {
-        LocalPlayer p = Minecraft.getInstance().player;
-        if (p != null) {
-            p.displayClientMessage(Component.literal("[Combat Tracker] " + msg).withStyle(color), false);
-        }
-    }
-
-    public boolean openLatestReport() {
-        return lastReportPath != null && Files.exists(lastReportPath) && openLocalReport(lastReportPath);
-    }
-
-    private static boolean openLocalReport(Path report) {
-        try {
-            String os = System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT);
-            java.util.List<String> command = os.contains("win")
-                    ? java.util.List.of("rundll32", "url.dll,FileProtocolHandler", report.toString())
-                    : os.contains("mac") ? java.util.List.of("open", report.toString())
-                    : java.util.List.of("xdg-open", report.toString());
-            new ProcessBuilder(command).start();
-            return true;
-        } catch (Exception e) {
-            LOGGER.debug("Could not open local report", e);
-            return false;
-        }
-    }
-
-    private void recordingSavedChat(Path html) {
-        LocalPlayer p = Minecraft.getInstance().player;
-        if (p == null) {
-            return;
-        }
-        Component msg = Component.literal("[Combat Tracker] Recording saved ").withStyle(ChatFormatting.GREEN)
-                .append(Component.literal("[Open report]").withStyle(Style.EMPTY
-                        .withColor(ChatFormatting.AQUA)
-                        .withUnderlined(true)
-                        .withClickEvent(new ClickEvent.OpenFile(html.toString()))));
-        p.displayClientMessage(msg, false);
-    }
-
-    private record SessionFile(String canonicalData) {
-    }
 }

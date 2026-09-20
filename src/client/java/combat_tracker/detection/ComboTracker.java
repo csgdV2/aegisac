@@ -2,7 +2,6 @@ package combat_tracker.detection;
 
 import combat_tracker.CombatTrackerClient;
 import combat_tracker.record.SessionRecorder;
-import combat_tracker.stats.ComboStatsTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
@@ -43,8 +42,6 @@ public class ComboTracker {
             long intervalMs = (nano - lastHitNano) / 1_000_000L;
             comboHits++;
             boolean newCombo = comboHits == 2;
-            ComboStatsTracker.get().record(intervalMs, newCombo);
-            ComboStatsTracker.get().save();
             SessionRecorder.get().recordCombo(intervalMs, newCombo);
         } else {
             currentTargetId = target.getId();

@@ -1,0 +1,21 @@
+name: ForceAegisAC
+version: ${project.version}
+main: dev.aegisac.force.ForceAegisAC
+api-version: '1.21'
+author: AegisAC
+description: Kicks players who join without the AegisAC client mod.
+
+commands:
+  forceaegisac:
+    description: Manage the ForceAegisAC plugin.
+    usage: /forceaegisac reload
+    aliases: [faac]
+    permission: forceaegisac.admin
+
+permissions:
+  forceaegisac.bypass:
+    description: Players with this permission are never kicked for missing the mod.
+    default: false
+  forceaegisac.admin:
+    description: Allows reloading the plugin config.
+    default: op

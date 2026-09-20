@@ -1,3 +1,0 @@
-# Replaced by a registered HudElement: 26.x extracts HUD render state instead
-# of drawing it, so there is no Gui.render(GuiGraphics, DeltaTracker) to hook.
-combat_tracker/mixin/GuiMixin.java

@@ -210,6 +210,12 @@ main {
   gap: 14px;
 }
 
+.more {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 4px;
+}
+
 .card {
   background: var(--panel);
   border: 1px solid var(--line);

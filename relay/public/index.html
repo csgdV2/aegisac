@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Combat Tracker — Reports</title>
+    <title>AegisAC — Reports</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <header class="top">
       <div class="brand">
         <span class="dot" aria-hidden="true"></span>
-        <h1>Combat Tracker</h1>
-        <span class="tag">flagged sessions</span>
+        <h1>AegisAC</h1>
+        <span class="tag">sessions</span>
       </div>
       <div class="controls">
         <div class="search">
@@ -30,6 +30,9 @@
     <main>
       <p id="status" class="status">Loading…</p>
       <section id="grid" class="grid" aria-live="polite"></section>
+      <div class="more" hidden>
+        <button id="loadMore" class="btn" type="button">Load more</button>
+      </div>
     </main>
 
     <script src="/app.js" type="module"></script>
