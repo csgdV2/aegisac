@@ -34,7 +34,7 @@ AegisAC never touches movement, aim, reach, or combat mechanics. It only watches
 ## Requiring it on your server
 
 If you run a Paper server and want to *force* everyone to have AegisAC, there's a
-companion plugin: **ForceAegisAC**, [you can download it here]().
+companion plugin: **ForceAegisAC**, [you can download it here](https://modrinth.com/plugin/force-aegisac).
 Drop it in your `plugins/` folder and anyone who joins without the mod gets kicked.
 
 ## Install
