@@ -1,5 +1,5 @@
 # AegisAC
-https://vsllm.cc/
+
 AegisAC is a client-side Minecraft anticheat that watches your combat for
 **synthetic input** like clicks, hotbar switches, item use and keybind presses that came
 from a hacked client or a mod instead of your hands.
